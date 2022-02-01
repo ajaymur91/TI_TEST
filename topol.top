@@ -1,0 +1,44 @@
+;
+;	File 'topol.top' was generated
+;	By user: amuralidhar4 (1017)
+;	On host: starling.chem.wisc.edu
+;	At date: Tue Feb  1 10:47:43 2022
+;
+;	This is a standalone topology file
+;
+;	Created by:
+;	                    :-) GROMACS - gmx pdb2gmx, 2019.6 (-:
+;	
+;	Executable:   /home/amuralidhar4/miniconda3/envs/CLIPS/bin/gmx
+;	Data prefix:  /home/amuralidhar4/miniconda3/envs/CLIPS
+;	Working dir:  /home/amuralidhar4/gromacs/Tutorial_tests/TI
+;	Command line:
+;	  gmx pdb2gmx -f water.box.gro
+;	Force field was read from the standard GROMACS share directory.
+;
+
+; Include forcefield parameters
+#include "oplsaa.ff/forcefield.itp"
+
+; Include water topology
+#include "oplsaa.ff/tip3p.itp"
+
+#ifdef POSRES_WATER
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct       fcx        fcy        fcz
+   1    1       1000       1000       1000
+#endif
+
+; Include topology for ions
+#include "oplsaa.ff/ions.itp"
+
+[ system ]
+; Name
+216H2O,WATJP01,SPC216,SPC-MODEL,300K,BOX(M)=1.86206NM,WFVG,MAR. 1984
+
+[ molecules ]
+; Compound        #mols
+SOL         340
+NA               1
+CL               1
