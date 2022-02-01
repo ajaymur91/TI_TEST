@@ -1,0 +1,62 @@
+eval "$(conda shell.bash hook)"
+conda activate CLIPS
+# Copied spc216.gro (equilibrated waters) from ~/miniconda3/share/gromacs/top
+gmx solvate -cp spc216.gro -cs spc216.gro -o water.box.gro -box 2.2 2.2 2.2
+echo -e "15 \n 3" | gmx pdb2gmx -f water.box.gro
+gmx grompp -f mdp/min.mdp -c water.box.gro -p topol.top -o ions.tpr
+echo SOL | gmx genion -s ions.tpr -o solv_ions.gro -p topol.top -pname NA -nname CL -neutral -np 1 -nn 1
+
+mkdir -p min
+gmx grompp -f mdp/min.mdp -c solv_ions.gro -p topol.top -o min/min.tpr
+cd min
+gmx mdrun -deffnm min
+
+mkdir -p npt
+gmx grompp -f mdp/npt.mdp -c min/min.gro -p topol.top -o npt/npt.tpr
+cd npt 
+gmx mdrun -deffnm npt
+
+mkdir -p FE
+for i in `seq 0 15`
+do 
+cp mdp/FE.mdp FE/"$i".mdp
+sed -i.bak "s|XXX|$i|g" FE/"$i".mdp
+done 
+rm -rf FE/*.bak
+
+#cp topol.top ghost.top
+# Edit ghost.top to add ghost molecule type and change (NA 1 and CL 1) to (ghost 1) at the end
+
+cd FE
+for i in `seq 0 15`
+do 
+mkdir -p topol"$i"
+done 
+cp ../npt/npt.gro topol0/start.gro 
+
+
+for i in `seq 0 15`
+do 
+	gmx grompp -f "$i".mdp -c topol"$i"/start.gro -p ../ghost.top -o topol"$i"/topol.tpr -maxwarn 1
+	cd topol"$i"
+	gmx mdrun -deffnm topol -nsteps 100000 -v
+	if [ $i -ne 15 ]; then
+		cp topol.gro ../topol"$((i+1))"/start.gro
+	fi
+	cd ..
+done
+
+mkdir -p dhdl
+
+for i in `seq 0 15`
+do 
+	cp topol"$i"/topol.xvg dhdl/topol."$i".dhdl.xvg
+done
+
+cd dhdl
+# conda install -c conda-forge alchemical-analysis 
+alchemical_analysis -m "TI+BAR+MBAR" -p topol -t 300 -v -s 100 -f 10
+cat results.txt
+cd ..
+
+
