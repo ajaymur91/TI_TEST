@@ -1,6 +1,12 @@
+THEORY:
 1) TI vs BAR vs MBAR vs EXP
-2) WHAT ARE SOFT CORE POTENTIALS
-3) ghost vs independent na/cl
-4) dependence of simulation time
+2) How are soft core potentials used in TI?
+See article (Soft-Core Potentials in Thermodynamic Integration. Comparing One- and Two-Step Transformations)
+
+CHECKS:
+3) ghost vs independent na/cl (any difference in delta G?)
+4) dependence of simulation time (convergence of delta G?)
+
+FOR FASTER SIMULATIONS:
 -----------------------------------
 install gromacs mpi & gpu version using spack
