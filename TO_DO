@@ -1,0 +1,6 @@
+1) TI vs BAR vs MBAR vs EXP
+2) WHAT ARE SOFT CORE POTENTIALS
+3) ghost vs independent na/cl
+4) dependence of simulation time
+-----------------------------------
+install gromacs mpi & gpu version using spack
